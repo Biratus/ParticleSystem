@@ -9,7 +9,7 @@ function Emitter(x,y) {
     this.particleParam={
         spawnRadius:{"minx":-1,"miny":-1,"maxx":1,"maxy":1},
         speed:1,
-        direction:{"x":0,"y":0},
+        direction:0,
         directionRandom:0.5,
         speedRandom:1
     };
@@ -53,7 +53,11 @@ function Emitter(x,y) {
     }
     
     this.randomDirection=function() {
-        return {"x":this.particleParam.direction.x+random(-1*this.particleParam.directionRandom,this.particleParam.directionRandom),
-                "y":this.particleParam.direction.y+random(-1*this.particleParam.directionRandom,this.particleParam.directionRandom)};
+        if(this.particleParam.direction==undefined) {
+            return random(0,360)*Math.PI/180;
+        }
+        return random(this.particleParam.direction-this.particleParam.directionRandom,this.particleParam.direction+this.particleParam.directionRandom)
+//        {"x":this.particleParam.direction.x+random(-1*this.particleParam.directionRandom,this.particleParam.directionRandom),
+//                "y":this.particleParam.direction.y+random(-1*this.particleParam.directionRandom,this.particleParam.directionRandom)};
     }
 }

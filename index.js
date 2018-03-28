@@ -7,24 +7,27 @@ const width=400,height=400;
 const inputCanvasWidth=100,inputCanvasHeight=100;
 const FrameRate=10;
 
+const baseX=1;
+const baseY=0;
+const baseSide=Math.sqrt(Math.pow(-baseX*inputCanvasWidth/2,2)+Math.pow(-baseY*inputCanvasHeight/2,2));
+
 window.onload=function() {
     let c=document.createElement("canvas");
     c.width=width;c.height=height;
     document.body.insertBefore(c,document.getElementById("values"));
-    c.style.border="1px solid red";
     ctx=c.getContext("2d");
-    //e = new Emitter(2*width/3,height);
+    
     e = new Emitter(width/2,height/2);
-//    e1=new Emitter(width/3,height);
-//    e1.start();
-    $("[type='range']").each(function(i,elt){
-        let val=parseFloat(elt.value);
-        e.particleParam.spawnRadius={"minx":-width*val/100,"miny":-height*val/100,"maxx":width*val/100,"maxy":height*val/100};
-         e.particleParam.speedRandom=val;
-        e.addParticleRate=val;
-        e.particlePerFrame=val;
-         e.particleParam.directionRandom=val;
-    });
+    
+    //init parameters
+    e.particleParam.spawnRadius=$("#spawnRadius").val();
+    e.particleParam.speedRandom=$("#speedRandom").val();
+    e.particleParam.speed=$("#speed").val();
+    e.addParticleRate=$("#emitUpRate").val();
+    e.particlePerFrame=$("#partAddRate").val();
+    e.particleParam.directionRandom=$("#directionRandom").val();
+    e.particleParam.direction=0;
+    //slider change
     $("[type='range']").on("change",function(event){
         let val=parseFloat(event.currentTarget.value);
         if($("#spawnRadius").is(event.currentTarget)) {
@@ -38,34 +41,43 @@ window.onload=function() {
         } else if($("#partAddRate").is(event.currentTarget)) {
             e.particlePerFrame=val;
         } else if($("#directionRandom").is(event.currentTarget)) {
-            e.particleParam.directionRandom=val;
+            e.particleParam.directionRandom=val*Math.PI/180;
         }
         $("#val_"+event.currentTarget.id).text(val);
         updateVelCanvas();
     });
-
+    //canvas click
     $("#velocityCanvas").on("click",function(event) {
-        let vX=event.offsetX-inputCanvasWidth/2,vY=event.offsetY-inputCanvasHeight/2;
         
-        e.particleParam.direction.x=vX/inputCanvasWidth;
-        e.particleParam.direction.y=vY/inputCanvasHeight;
+        let vX=event.offsetX-inputCanvasWidth/2,vY=event.offsetY-inputCanvasHeight/2;
+        /*vX/=inputCanvasWidth;
+        vY/=inputCanvasHeight;*/
+        console.log(vX+" "+vY);
+        let toPtSide=Math.sqrt(Math.pow(-vX,2)+Math.pow(vY,2));
+        let opposite=Math.sqrt(Math.pow(vX-baseX**inputCanvasWidth/2,2)+Math.pow(vY-baseY*inputCanvasHeight/2,2));
+        console.log("topt"+toPtSide+" opp:"+opposite);
+        let angle=Math.acos((toPtSide*toPtSide + baseSide*baseSide - opposite*opposite) / (2 * toPtSide * baseSide));
+        //let angle=Math.atan2(vX,-vY);
+        console.log(angle+"="+angle*(180/Math.PI));
+
+        e.particleParam.direction=angle;
         updateVelCanvas();
 
     });
-
+    //canvas display
     let velC = document.getElementById("velocityCanvas");
     velC.width=inputCanvasWidth;
     velC.height=inputCanvasHeight;
     velCtx=velC.getContext("2d");
     updateVelCanvas();
-    
+
     e.start();
     update();
 }
 
 function updateVelCanvas() {
     velCtx.clearRect(0,0,inputCanvasWidth,inputCanvasHeight);
-     //spawnRadius
+    //spawnRadius
     let valRad=$("#spawnRadius").val();
     let xRad=inputCanvasWidth/2-valRad*inputCanvasWidth/100;
     let yRad=inputCanvasHeight/2-valRad*inputCanvasHeight/100;
@@ -73,23 +85,46 @@ function updateVelCanvas() {
     velCtx.fillRect(xRad,yRad,valRad*inputCanvasWidth/50,valRad*inputCanvasHeight/50);
     velCtx.fillStyle="#ffffff";
     velCtx.fillRect(xRad+1,yRad+1,valRad*inputCanvasWidth/50-2,valRad*inputCanvasHeight/50-2);
-    
+
+    //baseLine
+    velCtx.strokeStyle="#00ff00";//green
+        velCtx.beginPath();
+        velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2);
+        velCtx.lineTo(baseX*inputCanvasWidth+inputCanvasWidth/2
+                      ,baseY*inputCanvasHeight+inputCanvasHeight/2);
+        velCtx.stroke();
     //direction
-    //min dir
-    velCtx.strokeStyle="#ff0000";
-    velCtx.beginPath();
-    velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2);
-    velCtx.lineTo((e.particleParam.direction.x-e.particleParam.directionRandom)*inputCanvasWidth+inputCanvasWidth/2,(e.particleParam.direction.y-e.particleParam.directionRandom)*inputCanvasHeight+inputCanvasHeight/2);
-    velCtx.stroke();
-    
-    //max dir
-    velCtx.strokeStyle="#ffff00";
-    velCtx.beginPath();
-    velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2);
-    velCtx.lineTo((e.particleParam.direction.x+e.particleParam.directionRandom)*inputCanvasWidth+inputCanvasWidth/2,(e.particleParam.direction.y+e.particleParam.directionRandom)*inputCanvasHeight+inputCanvasHeight/2);
-    velCtx.stroke();
-    
-    
+    if(e.particleParam.direction===undefined) {
+        velCtx.fillStyle="#0000ff";
+        velCtx.arc(inputCanvasWidth/2,inputCanvasHeight/2,inputCanvasHeight/3,0,Math.PI*2);
+        velCtx.stroke();
+    } else {
+        //main dir
+        velCtx.strokeStyle="#000000";//black
+        velCtx.beginPath();
+        velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2);
+        velCtx.lineTo(Math.cos(e.particleParam.direction)*inputCanvasWidth+inputCanvasWidth/2
+                      ,Math.sin(e.particleParam.direction)*inputCanvasHeight+inputCanvasHeight/2);
+        velCtx.stroke();
+        
+        //min dir
+        velCtx.strokeStyle="#ff0000";//Red
+        velCtx.beginPath();
+        velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2);
+        velCtx.lineTo(Math.cos(e.particleParam.direction-e.particleParam.directionRandom)*inputCanvasWidth+inputCanvasWidth/2
+                      ,Math.sin(e.particleParam.direction-e.particleParam.directionRandom)*inputCanvasHeight+inputCanvasHeight/2);
+        velCtx.stroke();
+
+        //max dir
+        velCtx.strokeStyle="#0000ff";//blue
+        velCtx.beginPath();
+        velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2);
+        velCtx.lineTo(Math.cos(e.particleParam.direction+e.particleParam.directionRandom)*inputCanvasWidth+inputCanvasWidth/2
+                      ,Math.sin(e.particleParam.direction+e.particleParam.directionRandom)*inputCanvasHeight+inputCanvasHeight/2);
+        velCtx.stroke();   
+    }
+
+
     velCtx.beginPath();
     velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2-inputCanvasHeight/20);
     velCtx.lineTo(inputCanvasWidth/2,inputCanvasHeight/2+inputCanvasHeight/20);
