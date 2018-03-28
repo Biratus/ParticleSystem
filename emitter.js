@@ -8,8 +8,10 @@ function Emitter(x,y) {
 
     this.particleParam={
         spawnRadius:{"minx":-1,"miny":-1,"maxx":1,"maxy":1},
-        velocity:{"x":0,"y":0},
-        velocityRandom:1
+        speed:1,
+        direction:{"x":0,"y":0},
+        directionRandom:0.5,
+        speedRandom:1
     };
 
     this.start=function() {
@@ -20,7 +22,7 @@ function Emitter(x,y) {
     this.addParticle=function() {
         let p= new Particle(this.x,this.y,
                             this.particleParam.spawnRadius,
-                           this.randomVelocity());
+                           this.randomDirection(),random(this.particleParam.speed,this.particleParam.speed+this.particleParam.speedRandom));
         p.bindUpdateEvent(function(){
             this.opacity-=0.01; 
         });
@@ -50,7 +52,8 @@ function Emitter(x,y) {
         },this.addParticleRate,this);
     }
     
-    this.randomVelocity=function() {
-        return {"x":this.particleParam.velocity.x+random(-1*this.particleParam.velocityRandom,this.particleParam.velocityRandom),"y":this.particleParam.velocity.y+random(-1*this.particleParam.velocityRandom,this.particleParam.velocityRandom)};
+    this.randomDirection=function() {
+        return {"x":this.particleParam.direction.x+random(-1*this.particleParam.directionRandom,this.particleParam.directionRandom),
+                "y":this.particleParam.direction.y+random(-1*this.particleParam.directionRandom,this.particleParam.directionRandom)};
     }
 }

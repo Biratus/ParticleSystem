@@ -4,6 +4,7 @@ var e,e1;
 var timeout;
 
 const width=400,height=400;
+const inputCanvasWidth=100,inputCanvasHeight=100;
 const FrameRate=10;
 
 window.onload=function() {
@@ -16,48 +17,86 @@ window.onload=function() {
     e = new Emitter(width/2,height/2);
 //    e1=new Emitter(width/3,height);
 //    e1.start();
-    e.start();
-    update();
+    $("[type='range']").each(function(i,elt){
+        let val=parseFloat(elt.value);
+        e.particleParam.spawnRadius={"minx":-width*val/100,"miny":-height*val/100,"maxx":width*val/100,"maxy":height*val/100};
+         e.particleParam.speedRandom=val;
+        e.addParticleRate=val;
+        e.particlePerFrame=val;
+         e.particleParam.directionRandom=val;
+    });
     $("[type='range']").on("change",function(event){
-        let val=parseInt(event.currentTarget.value);
+        let val=parseFloat(event.currentTarget.value);
         if($("#spawnRadius").is(event.currentTarget)) {
-            e.particleParam.spawnRadius={"minx":-1*val,"miny":-1*val,"maxx":val,"maxy":val}
-        } else if($("#velocityRandom").is(event.currentTarget)) {
-            e.particleParam.velocityRandom=val;
+            e.particleParam.spawnRadius={"minx":-width*val/100,"miny":-height*val/100,"maxx":width*val/100,"maxy":height*val/100}
+        } else if($("#speedRandom").is(event.currentTarget)) {
+            e.particleParam.speedRandom=val;
+        } else if($("#speed").is(event.currentTarget)) {
+            e.particleParam.speed=val;
         } else if($("#emitUpRate").is(event.currentTarget)) {
             e.addParticleRate=val;
         } else if($("#partAddRate").is(event.currentTarget)) {
             e.particlePerFrame=val;
+        } else if($("#directionRandom").is(event.currentTarget)) {
+            e.particleParam.directionRandom=val;
         }
         $("#val_"+event.currentTarget.id).text(val);
+        updateVelCanvas();
     });
 
     $("#velocityCanvas").on("click",function(event) {
-        let vX=event.offsetX-50,vY=event.offsetY-50;
+        let vX=event.offsetX-inputCanvasWidth/2,vY=event.offsetY-inputCanvasHeight/2;
         
-        e.particleParam.velocity.x=vX;
-        e.particleParam.velocity.y=vY;
-        velCtx.clearRect(0,0,100,100);
-        drawCrossVelCanvas();
-        velCtx.beginPath();
-        velCtx.arc(event.offsetX,event.offsetY,2,0,2*Math.PI);
-        velCtx.fill();
+        e.particleParam.direction.x=vX/inputCanvasWidth;
+        e.particleParam.direction.y=vY/inputCanvasHeight;
+        updateVelCanvas();
 
     });
 
     let velC = document.getElementById("velocityCanvas");
+    velC.width=inputCanvasWidth;
+    velC.height=inputCanvasHeight;
     velCtx=velC.getContext("2d");
-    drawCrossVelCanvas();
+    updateVelCanvas();
+    
+    e.start();
+    update();
 }
 
-function drawCrossVelCanvas() {
+function updateVelCanvas() {
+    velCtx.clearRect(0,0,inputCanvasWidth,inputCanvasHeight);
+     //spawnRadius
+    let valRad=$("#spawnRadius").val();
+    let xRad=inputCanvasWidth/2-valRad*inputCanvasWidth/100;
+    let yRad=inputCanvasHeight/2-valRad*inputCanvasHeight/100;
+    velCtx.fillStyle="#ff0000";
+    velCtx.fillRect(xRad,yRad,valRad*inputCanvasWidth/50,valRad*inputCanvasHeight/50);
+    velCtx.fillStyle="#ffffff";
+    velCtx.fillRect(xRad+1,yRad+1,valRad*inputCanvasWidth/50-2,valRad*inputCanvasHeight/50-2);
+    
+    //direction
+    //min dir
+    velCtx.strokeStyle="#ff0000";
     velCtx.beginPath();
-    velCtx.moveTo(50,45);
-    velCtx.lineTo(50,55);
+    velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2);
+    velCtx.lineTo((e.particleParam.direction.x-e.particleParam.directionRandom)*inputCanvasWidth+inputCanvasWidth/2,(e.particleParam.direction.y-e.particleParam.directionRandom)*inputCanvasHeight+inputCanvasHeight/2);
+    velCtx.stroke();
+    
+    //max dir
+    velCtx.strokeStyle="#ffff00";
+    velCtx.beginPath();
+    velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2);
+    velCtx.lineTo((e.particleParam.direction.x+e.particleParam.directionRandom)*inputCanvasWidth+inputCanvasWidth/2,(e.particleParam.direction.y+e.particleParam.directionRandom)*inputCanvasHeight+inputCanvasHeight/2);
+    velCtx.stroke();
+    
+    
+    velCtx.beginPath();
+    velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2-inputCanvasHeight/20);
+    velCtx.lineTo(inputCanvasWidth/2,inputCanvasHeight/2+inputCanvasHeight/20);
     velCtx.stroke();
     velCtx.beginPath();
-    velCtx.moveTo(45,50);
-    velCtx.lineTo(55,50);
+    velCtx.moveTo(inputCanvasWidth/2-inputCanvasWidth/20,inputCanvasHeight/2);
+    velCtx.lineTo(inputCanvasWidth/2+inputCanvasWidth/20,inputCanvasHeight/2);
     velCtx.stroke();
 
 }
@@ -78,5 +117,5 @@ function update() {
 }
 
 function random(min,max) {
-    return Math.random() * (max - min + 1) + min;
+    return Math.random() * (max - min) + min;
 }
