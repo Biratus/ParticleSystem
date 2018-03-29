@@ -28,6 +28,7 @@ window.onload=function() {
     e.particlePerFrame=parseFloat($("#partAddRate").val());
     e.particleParam.directionRandom=parseFloat($("#directionRandom").val());
     e.particleParam.direction=0;
+    
     //slider change
     $("[type='range']").on("change",function(event){
         let val=parseFloat(event.currentTarget.value);
@@ -50,27 +51,6 @@ window.onload=function() {
         updateVelCanvas();
     });
     //canvas click
-    /*$("#velocityCanvas").on("click",function(event) {
-        
-        let vX=event.offsetX-inputCanvasWidth/2,vY=event.offsetY-inputCanvasHeight/2;
-        console.log("vX"+vX+" vY"+vY);
-        let toPtSide=Math.sqrt(Math.pow(0-vX,2)+Math.pow(0-vY,2));
-        let opposite=Math.sqrt(Math.pow(vX-baseX*inputCanvasWidth/2,2)+Math.pow(vY-baseY*inputCanvasHeight/2,2));
-        console.log("topt"+toPtSide+" opp:"+opposite);
-        let angle=Math.acos((toPtSide*toPtSide + baseSide*baseSide - opposite*opposite) / (2 * toPtSide * baseSide));
-        console.log("cos"+Math.cos(angle)+"sin "+Math.sin(angle));
-         angle=Math.atan2(Math.cos(angle),Math.sin(angle));
-        //let angle=Math.atan2(vX,-vY);
-        console.log(angle+"="+angle*(180/Math.PI));
-
-        e.particleParam.direction=angle;
-        updateVelCanvas();
-        velCtx.fillStyle="#0000ff";
-        velCtx.moveTo(vX+inputCanvasWidth/2,vY+inputCanvasHeight/2);
-        velCtx.arc(vX+inputCanvasWidth/2,vY+inputCanvasHeight/2,2,0,Math.PI*2);
-        velCtx.stroke();
-
-    });*/
     //canvas display
     let velC = document.getElementById("velocityCanvas");
     velC.width=inputCanvasWidth;
@@ -84,6 +64,7 @@ window.onload=function() {
 
 function stop() {
     clearTimeout(timeout);
+    clearInterval(e.intervalUpdate);
 }
 
 function update() {

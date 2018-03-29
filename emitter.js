@@ -29,10 +29,10 @@ function Emitter(x,y) {
                             this.randomDirection(),
                             random(this.particleParam.speed,this.particleParam.speed+this.particleParam.speedRandom));
         p.bindUpdateEvent(function(){
-            this.opacity-=0.005; 
+            //this.opacity-=0.005; 
         });
         p.bindEndingCondition(function(){
-            return this.opacity<=0; 
+            return false;//this.opacity<=0; 
         });
         this.particles.push(p);
     }
@@ -42,7 +42,11 @@ function Emitter(x,y) {
         ctx.clearRect(0,0,width,height);
         ctx.fillStyle="#000000";
         ctx.fillRect(0,0,width,height);
-        this.particles.sort((a,b) => a.opacity-b.opacity);
+        this.particles.sort(function(a,b) {
+            let colA=a.color.split(",").reduce((acc,c)=>acc+c,0);
+            let colB=b.color.split(",").reduce((acc,c)=>acc+c,0);
+            return colA-colB;
+        });
         for(let p of this.particles) {
             p.update();
             p.show();

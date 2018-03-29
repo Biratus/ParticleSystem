@@ -10,6 +10,7 @@ function Particle(x,y,spawnRadius,direction,speed) {
     this.direction=direction || 0;
     
     this.toDelete=false;
+    this.color=Math.floor(random(0,255))+","+Math.floor(random(0,255))+","+Math.floor(random(0,255));
     
     this.updateEvents=[];
     this.endingConditions=[];
@@ -23,7 +24,8 @@ function Particle(x,y,spawnRadius,direction,speed) {
     }
 
     this.show=function() {
-        ctx.fillStyle="rgba(255,255,255,"+this.opacity+")";
+       // ctx.fillStyle="rgba(255,255,255,"+this.opacity+")";
+        ctx.fillStyle="rgba("+this.color+",1)";
         ctx.beginPath();
         ctx.arc(this.x,this.y,7,0,2*Math.PI);
         ctx.fill();
