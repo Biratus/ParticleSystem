@@ -20,18 +20,19 @@ window.onload=function() {
     e = new Emitter(width/2,height/2);
     
     //init parameters
-    e.particleParam.spawnRadius=$("#spawnRadius").val();
-    e.particleParam.speedRandom=$("#speedRandom").val();
-    e.particleParam.speed=$("#speed").val();
-    e.addParticleRate=$("#emitUpRate").val();
-    e.particlePerFrame=$("#partAddRate").val();
-    e.particleParam.directionRandom=$("#directionRandom").val();
+    let spanRadVal=parseInt($("#spawnRadius").val());
+    e.particleParam.spawnRadius={"minx":-width*spanRadVal/100,"miny":-height*spanRadVal/100,"maxx":width*spanRadVal/100,"maxy":height*spanRadVal/100}
+    e.particleParam.speedRandom=parseFloat($("#speedRandom").val());
+    e.particleParam.speed=parseFloat($("#speed").val());
+    e.addParticleRate=parseFloat($("#emitUpRate").val());
+    e.particlePerFrame=parseFloat($("#partAddRate").val());
+    e.particleParam.directionRandom=parseFloat($("#directionRandom").val());
     e.particleParam.direction=0;
     //slider change
     $("[type='range']").on("change",function(event){
         let val=parseFloat(event.currentTarget.value);
         if($("#spawnRadius").is(event.currentTarget)) {
-            e.particleParam.spawnRadius={"minx":-width*val/100,"miny":-height*val/100,"maxx":width*val/100,"maxy":height*val/100}
+            e.particleParam.spawnRadius={"minx":-width*val/100,"miny":-height*val/100,"maxx":width*val/100,"maxy":height*val/100};
         } else if($("#speedRandom").is(event.currentTarget)) {
             e.particleParam.speedRandom=val;
         } else if($("#speed").is(event.currentTarget)) {
@@ -42,28 +43,34 @@ window.onload=function() {
             e.particlePerFrame=val;
         } else if($("#directionRandom").is(event.currentTarget)) {
             e.particleParam.directionRandom=val*Math.PI/180;
+        } else if($("#direction").is(event.currentTarget)) {
+            e.particleParam.direction=val*Math.PI/180;
         }
         $("#val_"+event.currentTarget.id).text(val);
         updateVelCanvas();
     });
     //canvas click
-    $("#velocityCanvas").on("click",function(event) {
+    /*$("#velocityCanvas").on("click",function(event) {
         
         let vX=event.offsetX-inputCanvasWidth/2,vY=event.offsetY-inputCanvasHeight/2;
-        /*vX/=inputCanvasWidth;
-        vY/=inputCanvasHeight;*/
-        console.log(vX+" "+vY);
-        let toPtSide=Math.sqrt(Math.pow(-vX,2)+Math.pow(vY,2));
-        let opposite=Math.sqrt(Math.pow(vX-baseX**inputCanvasWidth/2,2)+Math.pow(vY-baseY*inputCanvasHeight/2,2));
+        console.log("vX"+vX+" vY"+vY);
+        let toPtSide=Math.sqrt(Math.pow(0-vX,2)+Math.pow(0-vY,2));
+        let opposite=Math.sqrt(Math.pow(vX-baseX*inputCanvasWidth/2,2)+Math.pow(vY-baseY*inputCanvasHeight/2,2));
         console.log("topt"+toPtSide+" opp:"+opposite);
         let angle=Math.acos((toPtSide*toPtSide + baseSide*baseSide - opposite*opposite) / (2 * toPtSide * baseSide));
+        console.log("cos"+Math.cos(angle)+"sin "+Math.sin(angle));
+         angle=Math.atan2(Math.cos(angle),Math.sin(angle));
         //let angle=Math.atan2(vX,-vY);
         console.log(angle+"="+angle*(180/Math.PI));
 
         e.particleParam.direction=angle;
         updateVelCanvas();
+        velCtx.fillStyle="#0000ff";
+        velCtx.moveTo(vX+inputCanvasWidth/2,vY+inputCanvasHeight/2);
+        velCtx.arc(vX+inputCanvasWidth/2,vY+inputCanvasHeight/2,2,0,Math.PI*2);
+        velCtx.stroke();
 
-    });
+    });*/
     //canvas display
     let velC = document.getElementById("velocityCanvas");
     velC.width=inputCanvasWidth;
@@ -72,7 +79,21 @@ window.onload=function() {
     updateVelCanvas();
 
     e.start();
-    update();
+    //update();
+}
+
+function stop() {
+    clearTimeout(timeout);
+}
+
+function update() {
+    ctx.clearRect(0,0,width,height);
+    ctx.fillStyle="#000000";
+    ctx.fillRect(0,0,width,height);
+
+    //e.update();
+    
+    //timeout=setTimeout(update,FrameRate);
 }
 
 function updateVelCanvas() {
@@ -104,7 +125,7 @@ function updateVelCanvas() {
         velCtx.beginPath();
         velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2);
         velCtx.lineTo(Math.cos(e.particleParam.direction)*inputCanvasWidth+inputCanvasWidth/2
-                      ,Math.sin(e.particleParam.direction)*inputCanvasHeight+inputCanvasHeight/2);
+                      ,-Math.sin(e.particleParam.direction)*inputCanvasHeight+inputCanvasHeight/2);
         velCtx.stroke();
         
         //min dir
@@ -112,7 +133,7 @@ function updateVelCanvas() {
         velCtx.beginPath();
         velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2);
         velCtx.lineTo(Math.cos(e.particleParam.direction-e.particleParam.directionRandom)*inputCanvasWidth+inputCanvasWidth/2
-                      ,Math.sin(e.particleParam.direction-e.particleParam.directionRandom)*inputCanvasHeight+inputCanvasHeight/2);
+                      ,-Math.sin(e.particleParam.direction-e.particleParam.directionRandom)*inputCanvasHeight+inputCanvasHeight/2);
         velCtx.stroke();
 
         //max dir
@@ -120,7 +141,7 @@ function updateVelCanvas() {
         velCtx.beginPath();
         velCtx.moveTo(inputCanvasWidth/2,inputCanvasHeight/2);
         velCtx.lineTo(Math.cos(e.particleParam.direction+e.particleParam.directionRandom)*inputCanvasWidth+inputCanvasWidth/2
-                      ,Math.sin(e.particleParam.direction+e.particleParam.directionRandom)*inputCanvasHeight+inputCanvasHeight/2);
+                      ,-Math.sin(e.particleParam.direction+e.particleParam.directionRandom)*inputCanvasHeight+inputCanvasHeight/2);
         velCtx.stroke();   
     }
 
@@ -133,23 +154,8 @@ function updateVelCanvas() {
     velCtx.moveTo(inputCanvasWidth/2-inputCanvasWidth/20,inputCanvasHeight/2);
     velCtx.lineTo(inputCanvasWidth/2+inputCanvasWidth/20,inputCanvasHeight/2);
     velCtx.stroke();
-
 }
 
-function stop() {
-    clearTimeout(timeout);
-}
-
-function update() {
-    ctx.clearRect(0,0,width,height);
-    ctx.fillStyle="#000000";
-    ctx.fillRect(0,0,width,height);
-
-    e.update();
-    //e1.update();
-
-    timeout=setTimeout(update,FrameRate);
-}
 
 function random(min,max) {
     return Math.random() * (max - min) + min;

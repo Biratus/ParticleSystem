@@ -1,7 +1,7 @@
 function Particle(x,y,spawnRadius,direction,speed) {
     spawnRadius = spawnRadius || {"minx":-1,"miny":-1,"maxx":1,"maxy":1};
-    this.x=x;//+random(spawnRadius.minx,spawnRadius.maxx);
-    this.y=y;//+random(spawnRadius.miny,spawnRadius.maxy);
+    this.x=x+random(spawnRadius.minx,spawnRadius.maxx);
+    this.y=y+random(spawnRadius.miny,spawnRadius.maxy);
     
     this.opacity=1;
     
@@ -29,8 +29,8 @@ function Particle(x,y,spawnRadius,direction,speed) {
         ctx.fill();
     }
     this.update=function() {
-        this.x+=Math.cos(this.direction);//*this.speed;
-        this.y+=Math.sin(this.direction);//*this.speed;
+        this.x+=Math.cos(this.direction)*this.speed;
+        this.y-=Math.sin(this.direction)*this.speed;
         
         for(let f of this.updateEvents) f.call(this);
         

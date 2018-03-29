@@ -5,6 +5,7 @@ function Emitter(x,y) {
     this.particlePerFrame=5;
     this.addParticleRate=10;
     this.timeoutAddParticle;
+    this.dT;
 
     this.particleParam={
         spawnRadius:{"minx":-1,"miny":-1,"maxx":1,"maxy":1},
@@ -17,14 +18,18 @@ function Emitter(x,y) {
     this.start=function() {
         //TODO emitter update in here
         this.addParticles();
+        this.dT=1;
+        //this.update();
+        this.intervalUpdate=setInterval(function(emit){emit.update();},FrameRate,this);
     }
 
     this.addParticle=function() {
         let p= new Particle(this.x,this.y,
                             this.particleParam.spawnRadius,
-                           this.randomDirection(),random(this.particleParam.speed,this.particleParam.speed+this.particleParam.speedRandom));
+                            this.randomDirection(),
+                            random(this.particleParam.speed,this.particleParam.speed+this.particleParam.speedRandom));
         p.bindUpdateEvent(function(){
-            this.opacity-=0.01; 
+            this.opacity-=0.005; 
         });
         p.bindEndingCondition(function(){
             return this.opacity<=0; 
@@ -33,31 +38,35 @@ function Emitter(x,y) {
     }
 
     this.update=function() {
-        for(let i=this.particles.length-1;i>=0;i--) {
-            let p=this.particles[i];
+        let startTime=new Date().getTime();
+        ctx.clearRect(0,0,width,height);
+        ctx.fillStyle="#000000";
+        ctx.fillRect(0,0,width,height);
+        this.particles.sort((a,b) => a.opacity-b.opacity);
+        for(let p of this.particles) {
             p.update();
             p.show();
-            if(p.toDelete) this.particles.splice(i,1);
         }
 
-        /*this.y-=1.5;
-        if(this.y<-10) clearTimeout(this.timeoutAddParticle);*/
+        this.particles=this.particles.filter(p => !p.toDelete);
+        //this.dT=new Date().getTime()-startTime;
+        //console.log(this.dT);
     }
 
     this.addParticles=function() {
         for(let i=0;i<this.particlePerFrame;i++) this.addParticle();
-        
+
         this.timeoutAddParticle=setTimeout(function(l) {
             l.addParticles();
         },this.addParticleRate,this);
     }
-    
+
     this.randomDirection=function() {
-        if(this.particleParam.direction==undefined) {
+        if(this.particleParam.direction===undefined) {
             return random(0,360)*Math.PI/180;
         }
         return random(this.particleParam.direction-this.particleParam.directionRandom,this.particleParam.direction+this.particleParam.directionRandom)
-//        {"x":this.particleParam.direction.x+random(-1*this.particleParam.directionRandom,this.particleParam.directionRandom),
-//                "y":this.particleParam.direction.y+random(-1*this.particleParam.directionRandom,this.particleParam.directionRandom)};
+        //        {"x":this.particleParam.direction.x+random(-1*this.particleParam.directionRandom,this.particleParam.directionRandom),
+        //                "y":this.particleParam.direction.y+random(-1*this.particleParam.directionRandom,this.particleParam.directionRandom)};
     }
 }
