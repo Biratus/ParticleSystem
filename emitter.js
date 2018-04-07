@@ -5,7 +5,8 @@ function Emitter(x,y) {
     this.particlePerFrame=5;
     this.addParticleRate=10;
     this.timeoutAddParticle;
-    this.dT;
+    this.deltaTime;
+    this.lastTimeUpdate;
 
     this.particleParam={
         spawnRadius:{"minx":-1,"miny":-1,"maxx":1,"maxy":1},
@@ -16,11 +17,10 @@ function Emitter(x,y) {
     };
 
     this.start=function() {
-        //TODO emitter update in here
         this.addParticles();
-        this.dT=1;
-        //this.update();
-        this.intervalUpdate=setInterval(function(emit){emit.update();},FrameRate,this);
+        this.deltaTime=1000/FrameRate;
+        this.lastTimeUpdate=new Date().getTime();
+        this.intervalUpdate=setInterval(function(emit){emit.update();},1000/FrameRate,this);
     }
 
     this.addParticle=function() {
@@ -38,7 +38,9 @@ function Emitter(x,y) {
     }
 
     this.update=function() {
-        let startTime=new Date().getTime();
+        this.deltaTime=new Date().getTime()-this.lastTimeUpdate;
+        this.lastTimeUpdate=new Date().getTime();
+
         ctx.clearRect(0,0,width,height);
         ctx.fillStyle="#000000";
         ctx.fillRect(0,0,width,height);
@@ -48,13 +50,11 @@ function Emitter(x,y) {
             return colA-colB;
         });
         for(let p of this.particles) {
-            p.update();
+            p.update(this.deltaTime);
             p.show();
         }
 
         this.particles=this.particles.filter(p => !p.toDelete);
-        //this.dT=new Date().getTime()-startTime;
-        //console.log(this.dT);
     }
 
     this.addParticles=function() {
@@ -70,7 +70,5 @@ function Emitter(x,y) {
             return random(0,360)*Math.PI/180;
         }
         return random(this.particleParam.direction-this.particleParam.directionRandom,this.particleParam.direction+this.particleParam.directionRandom)
-        //        {"x":this.particleParam.direction.x+random(-1*this.particleParam.directionRandom,this.particleParam.directionRandom),
-        //                "y":this.particleParam.direction.y+random(-1*this.particleParam.directionRandom,this.particleParam.directionRandom)};
     }
 }

@@ -46,10 +46,10 @@
         <div class="slidecontainer" id="values">
             Spawn Radius:<span id="val_spawnRadius">0</span>
             <input type="range" min="0" max="100" value="0" class="slider" id="spawnRadius">
-            Speed:<span id="val_speed">1</span>
-            <input type="range" min="0.1" max="10" value="1" class="slider" step="0.1" id="speed">
+            Speed:<span id="val_speed">100</span>
+            <input type="range" min="40" max="500" value="100" class="slider" step="5" id="speed">
             Speed Random:<span id="val_speedRandom">0</span>
-            <input type="range" min="0" max="50" value="0" step="0.01" class="slider" id="speedRandom">
+            <input type="range" min="0" max="100" value="0" step="1" class="slider" id="speedRandom">
             Spawn particles every:<span id="val_emitUpRate">200</span>
             <input type="range" min="0" max="500" value="200" class="slider" id="emitUpRate" step="5">
             Number of particles per update:<span id="val_partAddRate">1</span>
@@ -57,7 +57,7 @@
             Direction:<span id="val_direction">0</span>
             <input type="range" min="0" max="360" value="0" class="slider" step="1" id="direction">
             Direction Random:<span id="val_directionRandom">0</span>
-            <input type="range" min="0" max="360" value="0" class="slider" step="1" id="directionRandom">
+            <input type="range" min="0" max="180" value="0" class="slider" step="1" id="directionRandom">
 <!--
             Speed:<span id="val_speed">3</span>
             <input type="range" min="1" max="100" value="50" class="slider" id="speed">
@@ -66,6 +66,6 @@
         Direction:<br/>
         <canvas id="velocityCanvas" width="100" height="100"></canvas>
         Click to set velocity/direction
-        <button onclick="e.particleParam.direction=undefined;updateVelCanvas();">Reset</button>
+        <button onclick="reset()">Reset</button>
     </body>
 </html>

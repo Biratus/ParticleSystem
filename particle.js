@@ -30,9 +30,9 @@ function Particle(x,y,spawnRadius,direction,speed) {
         ctx.arc(this.x,this.y,7,0,2*Math.PI);
         ctx.fill();
     }
-    this.update=function() {
-        this.x+=Math.cos(this.direction)*this.speed;
-        this.y-=Math.sin(this.direction)*this.speed;
+    this.update=function(dt) {
+        this.x+=((Math.cos(this.direction)*this.speed)/1000)*dt;
+        this.y-=((Math.sin(this.direction)*this.speed)/1000)*dt;
         
         for(let f of this.updateEvents) f.call(this);
         

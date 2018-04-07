@@ -1,11 +1,10 @@
 var ctx;
 var velCtx;
-var e,e1;
-var timeout;
+var e;
 
 const width=400,height=400;
 const inputCanvasWidth=100,inputCanvasHeight=100;
-const FrameRate=10;
+const FrameRate=60;
 
 const baseX=1;
 const baseY=0;
@@ -33,7 +32,7 @@ window.onload=function() {
     $("[type='range']").on("change",function(event){
         let val=parseFloat(event.currentTarget.value);
         if($("#spawnRadius").is(event.currentTarget)) {
-            e.particleParam.spawnRadius={"minx":-width*val/100,"miny":-height*val/100,"maxx":width*val/100,"maxy":height*val/100};
+            e.particleParam.spawnRadius={"minx":-width*val*0.01/2,"miny":-height*val*0.01/2,"maxx":width*val*0.01/2,"maxy":height*val*0.01/2};
         } else if($("#speedRandom").is(event.currentTarget)) {
             e.particleParam.speedRandom=val;
         } else if($("#speed").is(event.currentTarget)) {
@@ -50,7 +49,7 @@ window.onload=function() {
         $("#val_"+event.currentTarget.id).text(val);
         updateVelCanvas();
     });
-    //canvas click
+    
     //canvas display
     let velC = document.getElementById("velocityCanvas");
     velC.width=inputCanvasWidth;
@@ -59,11 +58,9 @@ window.onload=function() {
     updateVelCanvas();
 
     e.start();
-    //update();
 }
 
 function stop() {
-    clearTimeout(timeout);
     clearInterval(e.intervalUpdate);
 }
 
@@ -71,22 +68,17 @@ function update() {
     ctx.clearRect(0,0,width,height);
     ctx.fillStyle="#000000";
     ctx.fillRect(0,0,width,height);
-
-    //e.update();
-    
-    //timeout=setTimeout(update,FrameRate);
 }
 
 function updateVelCanvas() {
     velCtx.clearRect(0,0,inputCanvasWidth,inputCanvasHeight);
+    
     //spawnRadius
-    let valRad=$("#spawnRadius").val();
-    let xRad=inputCanvasWidth/2-valRad*inputCanvasWidth/100;
-    let yRad=inputCanvasHeight/2-valRad*inputCanvasHeight/100;
-    velCtx.fillStyle="#ff0000";
-    velCtx.fillRect(xRad,yRad,valRad*inputCanvasWidth/50,valRad*inputCanvasHeight/50);
-    velCtx.fillStyle="#ffffff";
-    velCtx.fillRect(xRad+1,yRad+1,valRad*inputCanvasWidth/50-2,valRad*inputCanvasHeight/50-2);
+    let valRad=$("#spawnRadius").val()*0.01;
+    let xRad=(1-valRad)*inputCanvasWidth/2;
+    let yRad=(1-valRad)*inputCanvasHeight/2;
+    velCtx.strokeStyle="#ff0000";
+    velCtx.strokeRect(xRad,yRad,inputCanvasWidth-2*xRad,inputCanvasHeight-2*yRad);
 
     //baseLine
     velCtx.strokeStyle="#00ff00";//green
@@ -137,6 +129,24 @@ function updateVelCanvas() {
     velCtx.stroke();
 }
 
+function reset() {
+    e.particleParam.spawnRadius={"minx":0,"miny":0,"maxx":0,"maxy":0}
+    e.particleParam.speedRandom=0;
+    e.particleParam.speed=100;
+    e.addParticleRate=200;
+    e.particlePerFrame=1;
+    e.particleParam.directionRandom=0;
+    e.particleParam.direction=0;
+    updateVelCanvas();
+    $("#spawnRadius").val(0);
+    $("#speedRandom").val(0);
+    $("#speed").val(100);
+    $("#emitUpRate").val(200);
+    $("#partAddRate").val(1);
+    $("#directionRandom").val(0);
+    $("#direction").val(0);
+    
+}
 
 function random(min,max) {
     return Math.random() * (max - min) + min;
