@@ -1,0 +1,63 @@
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;   
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%; 
+    background: #4CAF50;
+    cursor: pointer;
+}
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+.input-group.mb-3>.slider{
+    margin:auto 1em;
+}
+#emitParam {
+    margin:0 2em;
+    display: flex;
+}
+#emitParam>*:first-child {
+    width:60%;
+}
+#propertyDisplay {
+    margin:2em;
+    display:block;
+}
+#velocityCanvas {
+    border:1px solid red;
+}
+#currColor {
+    width:50px;
+    border:1px solid gray;
+}
+#header{
+    width:100%;
+    display:inline-flex;
+    margin:2em;
+    margin-bottom:0;
+}
+#canvas{
+    margin-right:1em;
+}
+.particleParam:first-of-type{
+  margin-left: 1em;
+}
+.particleParam:nth-of-type(2) {
+    margin:2em 1em;
+}

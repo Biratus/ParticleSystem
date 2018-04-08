@@ -3,10 +3,13 @@ function Emitter(x,y) {
     this.x=x;this.y=y;
 
     this.particlePerFrame=5;
-    this.addParticleRate=10;
+    this.spawnParticleRate=10;
     this.timeoutAddParticle;
     this.deltaTime;
     this.lastTimeUpdate;
+
+    this.updateFunctions={};
+    this.endingConditions={};
 
     this.particleParam={
         spawnRadius:{"minx":-1,"miny":-1,"maxx":1,"maxy":1},
@@ -28,33 +31,40 @@ function Emitter(x,y) {
                             this.particleParam.spawnRadius,
                             this.randomDirection(),
                             random(this.particleParam.speed,this.particleParam.speed+this.particleParam.speedRandom));
-        p.bindUpdateEvent(function(){
-            //this.opacity-=0.005; 
-        });
-        p.bindEndingCondition(function(){
-            return false;//this.opacity<=0; 
-        });
+        for(let i in this.updateFunctions) {
+            if(this.updateFunctions[i]!=null) p.bindUpdateEvent(this.updateFunctions[i]);
+        }
+        for(let i in this.endingConditions) {
+            if(this.endingConditions[i]!=null) p.bindEndingCondition(this.endingConditions[i]);
+        }
+
         this.particles.push(p);
     }
 
-    this.update=function() {
-        this.deltaTime=new Date().getTime()-this.lastTimeUpdate;
-        this.lastTimeUpdate=new Date().getTime();
+    this.removeFunctionsFor=function(func) {
+        this.updateFunctions[func]=null;
+        this.endingConditions[func]=null;
+    }
 
-        ctx.clearRect(0,0,width,height);
-        ctx.fillStyle="#000000";
-        ctx.fillRect(0,0,width,height);
-        this.particles.sort(function(a,b) {
-            let colA=a.color.split(",").reduce((acc,c)=>acc+c,0);
-            let colB=b.color.split(",").reduce((acc,c)=>acc+c,0);
-            return colA-colB;
-        });
-        for(let p of this.particles) {
-            p.update(this.deltaTime);
-            p.show();
+    this.update=function() {
+        try {
+            this.deltaTime=new Date().getTime()-this.lastTimeUpdate;
+            this.lastTimeUpdate=new Date().getTime();
+
+            ctx.clearRect(0,0,width,height);
+            ctx.fillStyle="#000000";
+            ctx.fillRect(0,0,width,height);
+
+            for(let p of this.particles) {
+                p.update(this.deltaTime);
+                p.show();
+            }
+        } catch(e) {
+            console.error(e);
         }
 
         this.particles=this.particles.filter(p => !p.toDelete);
+        $("#particleNb").text(this.particles.length);
     }
 
     this.addParticles=function() {
@@ -62,7 +72,7 @@ function Emitter(x,y) {
 
         this.timeoutAddParticle=setTimeout(function(l) {
             l.addParticles();
-        },this.addParticleRate,this);
+        },this.spawnParticleRate,this);
     }
 
     this.randomDirection=function() {

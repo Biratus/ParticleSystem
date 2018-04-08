@@ -1,71 +1,184 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+        <script
+                src="https://code.jquery.com/jquery-3.3.1.min.js"
+                integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+                crossorigin="anonymous"></script>
+        <script type="text/javascript" src="bootstrap.min.js"></script>
+        <script type="text/javascript" src="bootstrap.bundle.min.js "></script>
 
         <script type="text/javascript" src="index.js"></script>
         <script type="text/javascript" src="emitter.js"></script>
         <script type="text/javascript" src="particle.js"></script>
+        <script type="text/javascript" src="modifiers.js"></script>
+
+        <link rel="stylesheet" href="bootstrap.min.css"/>
+        <link rel="stylesheet" href="style.css"/>
     </head>
     <body>
-        <style>
-            .slider {
-                -webkit-appearance: none;
-                width: 100%;
-                height: 15px;
-                border-radius: 5px;   
-                background: #d3d3d3;
-                outline: none;
-                opacity: 0.7;
-                -webkit-transition: .2s;
-                transition: opacity .2s;
-            }
+        <div id="header">
+            <canvas id="canvas"></canvas>
+            <div class="container particleParam">
+                <h3>Particle parameters</h3>
+                <!--Alpha-->
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Opacity change over time?</span>
+                        <div class="input-group-text">
+                            <input type="checkbox" id="opacityCheck">
+                        </div>
+                    </div>
+                    <select class="custom-select" id="opacitySelect">
+                        <option value="1">Increasing</option>
+                        <option selected value="-1">Decreasing</option>
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Opacity change rate over time:</span>
+                        <span class="input-group-text" id="val_opacityCoef">10</span>
+                    </div>
+                    <input type="range" min="2" max="60" value="20" step="2" class="form-control slider" id="opacityCoef">
+                </div>
+                <!-- Brightness -->
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Brightness change over time</span>
+                        <div class="input-group-text">
+                            <input type="checkbox" id="brightnessCheck">
+                        </div>
+                    </div>
 
-            .slider::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 25px;
-                height: 25px;
-                border-radius: 50%; 
-                background: #4CAF50;
-                cursor: pointer;
-            }
+                    <select class="custom-select" id="brightnessSelect">
+                        <option value="1">Increasing</option>
+                        <option selected value="-1">Decreasing</option>
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Brightness change rate over time:</span>
+                        <span class="input-group-text" id="val_brightnessCoef">10</span>
+                    </div>
+                    <input type="range" min="2" max="100" value="10" step="2" class="slider form-control" id="brightnessCoef">
 
-            .slider::-moz-range-thumb {
-                width: 25px;
-                height: 25px;
-                border-radius: 50%;
-                background: #4CAF50;
-                cursor: pointer;
-            }
-            #velocityCanvas {
-                border:1px solid red;
-            }
-        </style>
-        <button onclick="e.particles=[];">Clear particles</button>
-        <div class="slidecontainer" id="values">
-            Spawn Radius:<span id="val_spawnRadius">0</span>
-            <input type="range" min="0" max="100" value="0" class="slider" id="spawnRadius">
-            Speed:<span id="val_speed">100</span>
-            <input type="range" min="40" max="500" value="100" class="slider" step="5" id="speed">
-            Speed Random:<span id="val_speedRandom">0</span>
-            <input type="range" min="0" max="100" value="0" step="1" class="slider" id="speedRandom">
-            Spawn particles every:<span id="val_emitUpRate">200</span>
-            <input type="range" min="0" max="500" value="200" class="slider" id="emitUpRate" step="5">
-            Number of particles per update:<span id="val_partAddRate">1</span>
-            <input type="range" min="1" max="50" value="1" class="slider" id="partAddRate" >
-            Direction:<span id="val_direction">0</span>
-            <input type="range" min="0" max="360" value="0" class="slider" step="1" id="direction">
-            Direction Random:<span id="val_directionRandom">0</span>
-            <input type="range" min="0" max="180" value="0" class="slider" step="1" id="directionRandom">
-<!--
-            Speed:<span id="val_speed">3</span>
-            <input type="range" min="1" max="100" value="50" class="slider" id="speed">
--->
+                </div>
+                <!-- Color Picker -->
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Color:</span>
+                        <div class="input-group-text" id="currColor"></div>
+                    </div>
+                    <input type="range" class="slider form-control" id="rangeColorPicker" min="0" max="360" step="1"/>
+
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Black And White</span>
+                        <div class="input-group-text">
+                            <input type="checkbox" id="baw">
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Random colors</span>
+                        <div class="input-group-text">
+                            <input type="checkbox" id="rndColor">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container particleParam">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Width:</span>
+                        <div class="input-group-text" id="val_width">7</div>
+                    </div>
+                    <input type="range" class="slider form-control" id="width" min="1" max="50" step="1" value="7"/>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Width Random:</span>
+                        <div class="input-group-text" id="val_widthRandom">0</div>
+                    </div>
+                    <input type="range" class="slider form-control" id="widthRandom" min="0" max="50" step="1" value="0"/>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Fill particle</span>
+                        <div class="input-group-text">
+                            <input type="checkbox" checked id="fill">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        Direction:<br/>
-        <canvas id="velocityCanvas" width="100" height="100"></canvas>
-        Click to set velocity/direction
-        <button onclick="reset()">Reset</button>
+
+        <div id="emitParam">
+            <div>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-secondary" onclick="e.particles=[];">Clear particles</button>
+                    <button class="btn btn-secondary" onclick="reset()">Reset</button>
+                    <button class="btn btn-secondary" onclick="randomize()">Random configuration</button>
+                </div>
+                <h3>Emitter parameters</h3>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Spawn radius:</span>
+                        <span class="input-group-text" id="val_spawnRadius">0</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="0" class="slider form-control" id="spawnRadius">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Speed:</span>
+                        <span class="input-group-text" id="val_speed">100</span>
+                    </div>
+                    <input type="range" min="40" max="500" value="100" class="slider form-control" step="5" id="speed">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Speed random:</span>
+                        <span class="input-group-text" id="val_speedRandom">0</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="0" step="1" class="slider form-control" id="speedRandom">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Spawn particles every (ms):</span>
+                        <span class="input-group-text" id="val_emitUpRate">200</span>
+                    </div>
+                    <input type="range" min="0" max="500" value="200" class="slider form-control" id="emitUpRate" step="5">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Number of particles per update:</span>
+                        <span class="input-group-text" id="val_partAddRate">1</span>
+                    </div>
+                    <input type="range" min="1" max="50" value="1" class="slider form-control" id="partAddRate" >
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Direction:</span>
+                        <span class="input-group-text" id="val_direction">0</span>
+                    </div>
+                    <input type="range" min="0" max="360" value="0" class="slider form-control" step="1" id="direction">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Direction random:</span>
+                        <span class="input-group-text" id="val_directionRandom">0</span>
+                    </div>
+                    <input type="range" min="0" max="180" value="0" class="slider form-control" step="1" id="directionRandom">
+                </div>
+            </div>
+            <div id="propertyDisplay">
+                <h3>Direction</h3>
+                <canvas id="velocityCanvas" width="100" height="100"></canvas>
+                <p>Number of particles on the canvas: <strong id="particleNb"></strong></p>
+            </div>
+        </div>
+
     </body>
 </html>
