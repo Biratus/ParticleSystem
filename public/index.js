@@ -5,7 +5,7 @@ var e;
 const opacityChange=0.01;
 const brightnessChange=0.7;
 
-const width=400,height=400;
+var width=400,height=400;
 const inputCanvasWidth=200,inputCanvasHeight=200;
 const FrameRate=60;
 
@@ -16,8 +16,10 @@ const baseSide=Math.sqrt(Math.pow(-baseX*inputCanvasWidth/2,2)+Math.pow(-baseY*i
 window.onload=function() {
     //canvas particle display
     let c=document.getElementById("canvas");
+    $("#canvas").width(width);
+    $("#canvas").height(height);
     c.width=width;
-    c.height=height;
+    c.height=c.width;
     ctx=c.getContext("2d");
 
     //canvas parameters display
@@ -230,20 +232,20 @@ function randomize() {
     e.particles=[];
 
     changeSpawnRadius(randomRange("#spawnRadius"));
-    changeSpeedRandom(Math.round(0,1)?randomRange("#speedRandom"):parseFloat($("#speedRandom").attr('min')));
+    changeSpeedRandom(Math.round(random(0,1))?randomRange("#speedRandom"):parseFloat($("#speedRandom").attr('min')));
     changeSpeed(randomRange("#speed"));
     changeSpawnParticleRate(randomRange("#emitUpRate"));
     changeParticlePerFrame(randomRange("#partAddRate"));
-    changeDirectionRandom(Math.round(0,1)?randomRange("#directionRandom"):parseFloat($("#directionRandom").attr('min')));
+    changeDirectionRandom(Math.round(random(0,1))?randomRange("#directionRandom"):parseFloat($("#directionRandom").attr('min')));
     changeDirection(randomRange("#direction"));
     changeWidth(randomRange("#width"));
-    changeWidthRandom(Math.round(0,1)?randomRange("#widthRandom"):parseFloat($("#widthRandom").attr('min')));
+    changeWidthRandom(Math.round(random(0,1))?randomRange("#widthRandom"):parseFloat($("#widthRandom").attr('min')));
 
-    let colorChoice=Math.round(random(0,2));
-    if(colorChoice==0) {//black and white
+    let colorChoice=random(0,99);
+    if(colorChoice<=33) {//black and white
         toWhiteAndBlack();
         $("#baw").prop("checked",true);
-    } else if(colorChoice==1) {//rndColor
+    } else if(colorChoice<=66) {//rndColor
         changeColor(-1);
         $("#rndColor").prop("checked",true);
         let brightness=Math.round(random(0,1));
@@ -258,7 +260,7 @@ function randomize() {
             $("#brightnessCheck").prop("checked",false);
         }
         changeBrightness();
-    } else if(colorChoice==2) {//specific color
+    } else {//specific color
         changeColor(randomRange("#rangeColorPicker"));
         let brightness=Math.round(random(0,1));
         if(brightness) {
@@ -286,15 +288,20 @@ function randomize() {
         $("#opacityCheck").prop("checked",false);
     }
     changeOpacity();
+    
+    //fill
+    if(Math.round(random(0,1))) particleParam.fill=true;
+    else particleParam.fill=false;
+    $("#fill").prop("checked",particleParam.fill);
 
     updateVelCanvas();
 }
 
 function randomRange(id) {
     let val=random($(id).attr('min'),$(id).attr('max'));
-    if($(id).attr('step')%1>0) return val;
+    if($(id).attr('step')%1>0) return parseFloat(val);
     val=Math.round(val);
     if(val<$(id).attr('min')) val=$(id).attr('min');
     else if(val>$(id).attr('max')) val=$(id).attr('max');
-    return val;
+    return parseInt(val);
 }
