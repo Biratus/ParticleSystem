@@ -23,7 +23,11 @@ function Emitter(x,y) {
         this.addParticles();
         this.deltaTime=1000/FrameRate;
         this.lastTimeUpdate=new Date().getTime();
-        this.intervalUpdate=setInterval(function(emit){emit.update();},1000/FrameRate,this);
+
+
+        this.timeoutAddParticle=setInterval(function(l) {
+            l.addParticles();
+        },this.spawnParticleRateValue,this);
     }
 
     this.addParticle=function() {
@@ -50,10 +54,6 @@ function Emitter(x,y) {
         try {
             this.deltaTime=new Date().getTime()-this.lastTimeUpdate;
             this.lastTimeUpdate=new Date().getTime();
-
-            ctx.clearRect(0,0,width,height);
-            ctx.fillStyle="#000000";
-            ctx.fillRect(0,0,width,height);
 
             for(let p of this.particles) {
                 p.update(this.deltaTime);

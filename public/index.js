@@ -1,6 +1,6 @@
 var ctx;
 var velCtx;
-var e;
+var emitters=[];
 
 const opacityChange=0.01;
 const brightnessChange=0.7;
@@ -28,7 +28,9 @@ window.onload=function() {
     velC.height=inputCanvasHeight;
     velCtx=velC.getContext("2d");
 
-    e = new Emitter(width/2,height/2);
+    let e1=new Emitter(width/2,height/2);
+
+    emitters.push(e1);
 
     //init parameters
     reset();
