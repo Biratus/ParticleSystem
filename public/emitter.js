@@ -15,10 +15,9 @@ function Emitter(x,y) {
         set:function(newVal) {
             this.spawnParticleRateValue=newVal;
             clearInterval(this.timeoutAddParticle);
-            this.timeoutAddParticle=setInterval(function(l) {
-                l.addParticles();
+            this.timeoutAddParticle=setInterval(function(emit) {
+                emit.addParticles();
             },this.spawnParticleRateValue,this);
-
         }
     });
 
@@ -32,15 +31,13 @@ function Emitter(x,y) {
     };
 
     this.start=function() {
-        this.addParticles();
         this.deltaTime=1000/FrameRate;
         this.lastTimeUpdate=new Date().getTime();
 
-
-        this.timeoutAddParticle=setInterval(function(l) {
-            l.addParticles();
+        clearInterval(this.timeoutAddParticle);
+        this.timeoutAddParticle=setInterval(function(emit) {
+            emit.addParticles();
         },this.spawnParticleRateValue,this);
-        //this.intervalUpdate=setInterval(function(emit){emit.update();},1000/FrameRate,this);
     }
 
     this.stop=function() {

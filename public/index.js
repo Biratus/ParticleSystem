@@ -6,10 +6,13 @@ var updateTimeout;
 const opacityChange=0.01;
 const brightnessChange=0.7;
 
-var width=400,height=400;
+const initW=400,initH=400;
+
+var width=initW,height=initH;
 const inputCanvasWidth=200,inputCanvasHeight=200;
 const FrameRate=60;
 
+const fullscreenCoef=0.9;
 const baseX=1;
 const baseY=0;
 const baseSide=Math.sqrt(Math.pow(-baseX*inputCanvasWidth/2,2)+Math.pow(-baseY*inputCanvasHeight/2,2));
@@ -22,6 +25,41 @@ window.onload=function() {
     c.width=width;
     c.height=c.width;
     ctx=c.getContext("2d");
+    $("#canvas").on("dblclick",function(event){
+        $("body>div").hide();
+        $("#fullscreen").show();
+        clear();
+        for(let e of emitters) {
+            let coefX=e.x/width;
+            let coefY=e.y/height;
+            e.x=window.innerWidth*coefX*fullscreenCoef;
+            e.y=window.innerHeight*coefY*fullscreenCoef;
+        }
+        width=window.innerWidth*fullscreenCoef;
+        height=window.innerHeight*fullscreenCoef;
+        let c=document.getElementById("fullscreen");
+        ctx=c.getContext("2d");
+    });
+    $("#fullscreen").on("dblclick",function(event){
+        $("#fullscreen").hide();
+        $("body>div").show();
+        clear();
+        width=initW;
+        height=initH;
+        for(let e of emitters) {
+            let coefX=e.x/(window.innerWidth*fullscreenCoef);
+            let coefY=e.y/(window.innerHeight*fullscreenCoef);
+            e.x=width*coefX;
+            e.y=height*coefY;
+        }
+
+        let c=document.getElementById("canvas");
+        ctx=c.getContext("2d");
+    });
+    let fScreen=document.getElementById("fullscreen");
+    fScreen.width=window.innerWidth*fullscreenCoef;
+    fScreen.height=window.innerHeight*fullscreenCoef;
+    $("#fullscreen").hide();
 
     //canvas parameters display
     let velC = document.getElementById("velocityCanvas");
@@ -37,11 +75,6 @@ window.onload=function() {
     reset();
     changeOpacity();
     changeBrightness();
-
-    e1.particleParam.direction=Math.PI;
-    e2.particleParam.direction=0;
-    e3.particleParam.direction=Math.PI/2;
-    e4.particleParam.direction=3*Math.PI/2;
 
     //slider change
     $("[type='range']").on("change",function(event){
@@ -232,7 +265,6 @@ function reset() {
     changeParticlePerFrame(1);
     changeDirectionRandom(0);
     changeDirection(0);
-
     $("#opacityCheck").prop("checked",false);
     $("#brightnessCheck").prop("checked",false);
     $("#fill").prop("checked",true);
