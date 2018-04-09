@@ -133,7 +133,7 @@ window.onload=function() {
             toWhiteAndBlack();
         } 
         else {
-            cahngeColor($("#rangeColorPicker").val());
+            changeColor($("#rangeColorPicker").val());
         }
     });
 

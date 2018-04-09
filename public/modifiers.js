@@ -62,6 +62,7 @@ function changeColor(val) {
         $("#currColor").css("background","hsla("+val+",100%,50%,1)");
         $("#baw").prop("checked",false);
         $("#rndColor").prop("checked",false);
+        if(particleParam.brightness==100 && !$("#brightnessCheck").is(":checked")) particleParam.brightness=50;
     }
     particleParam.color=val;
 }
