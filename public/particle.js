@@ -35,6 +35,7 @@ function Particle(x,y,spawnRadius,direction,speed) {
     this.show=function() {
         ctx.fillStyle=this.colorHsl();
         ctx.strokeStyle=this.colorHsl();
+        ctx.lineWidth=2;
         ctx.beginPath();
         ctx.arc(this.x,this.y,this.width,0,2*Math.PI);
         if(this.fill) ctx.fill();

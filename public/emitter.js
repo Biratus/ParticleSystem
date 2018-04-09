@@ -2,8 +2,6 @@ function Emitter(x,y) {
     this.particles=[];
     this.x=x;this.y=y;
 
-    this.particlePerFrame=5;
-    this.spawnParticleRate=10;
     this.timeoutAddParticle;
     this.deltaTime;
     this.lastTimeUpdate;
@@ -11,6 +9,20 @@ function Emitter(x,y) {
     this.updateFunctions={};
     this.endingConditions={};
 
+    this.spawnParticleRateValue=10;
+
+    Object.defineProperty(this,'spawnParticleRate',{
+        set:function(newVal) {
+            this.spawnParticleRateValue=newVal;
+            clearInterval(this.timeoutAddParticle);
+            this.timeoutAddParticle=setInterval(function(l) {
+                l.addParticles();
+            },this.spawnParticleRateValue,this);
+
+        }
+    });
+
+    this.particlePerFrame=5;
     this.particleParam={
         spawnRadius:{"minx":-1,"miny":-1,"maxx":1,"maxy":1},
         speed:1,
@@ -23,7 +35,16 @@ function Emitter(x,y) {
         this.addParticles();
         this.deltaTime=1000/FrameRate;
         this.lastTimeUpdate=new Date().getTime();
-        this.intervalUpdate=setInterval(function(emit){emit.update();},1000/FrameRate,this);
+
+
+        this.timeoutAddParticle=setInterval(function(l) {
+            l.addParticles();
+        },this.spawnParticleRateValue,this);
+        //this.intervalUpdate=setInterval(function(emit){emit.update();},1000/FrameRate,this);
+    }
+
+    this.stop=function() {
+        clearInterval(this.timeoutAddParticle);
     }
 
     this.addParticle=function() {
@@ -51,28 +72,24 @@ function Emitter(x,y) {
             this.deltaTime=new Date().getTime()-this.lastTimeUpdate;
             this.lastTimeUpdate=new Date().getTime();
 
-            ctx.clearRect(0,0,width,height);
-            ctx.fillStyle="#000000";
-            ctx.fillRect(0,0,width,height);
+            let coef=width/10;
+            this.particleParam.direction+=(Math.PI/2/1000)*this.deltaTime;
+            this.x=width/2+Math.cos(this.particleParam.direction)*coef;
+            this.y=height/2-Math.sin(this.particleParam.direction)*coef;
 
             for(let p of this.particles) {
                 p.update(this.deltaTime);
                 p.show();
             }
-        } catch(e) {
-            console.error(e);
+        } catch(ex) {
+            console.error(ex);
         }
 
         this.particles=this.particles.filter(p => !p.toDelete);
-        $("#particleNb").text(this.particles.length);
     }
 
     this.addParticles=function() {
         for(let i=0;i<this.particlePerFrame;i++) this.addParticle();
-
-        this.timeoutAddParticle=setTimeout(function(l) {
-            l.addParticles();
-        },this.spawnParticleRate,this);
     }
 
     this.randomDirection=function() {
