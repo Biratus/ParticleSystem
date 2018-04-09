@@ -37,10 +37,10 @@ function Emitter(x,y) {
         this.lastTimeUpdate=new Date().getTime();
 
 
+        clearInterval(this.timeoutAddParticle);
         this.timeoutAddParticle=setInterval(function(l) {
             l.addParticles();
         },this.spawnParticleRateValue,this);
-        //this.intervalUpdate=setInterval(function(emit){emit.update();},1000/FrameRate,this);
     }
 
     this.stop=function() {
