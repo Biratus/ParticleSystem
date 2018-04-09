@@ -1,6 +1,7 @@
 var ctx;
 var velCtx;
 var emitters=[];
+var updateTimeout;
 
 const opacityChange=0.01;
 const brightnessChange=0.7;
@@ -36,6 +37,11 @@ window.onload=function() {
     reset();
     changeOpacity();
     changeBrightness();
+
+    e1.particleParam.direction=Math.PI;
+    e2.particleParam.direction=0;
+    e3.particleParam.direction=Math.PI/2;
+    e4.particleParam.direction=3*Math.PI/2;
 
     //slider change
     $("[type='range']").on("change",function(event){
@@ -127,14 +133,38 @@ window.onload=function() {
         changeColor($(this).val());
     })
 
-    e.start();
+    for(let e of emitters) e.start();
+    updateTimeout = setInterval(update,1000/FrameRate);
 }
 
 function stop() {
-    clearInterval(e.intervalUpdate);
+    clearInterval(updateTimeout);
+    for(let e of emitters) e.stop();
+}
+
+function clear() {
+    for(let e of emitters) {
+        e.particles=[];
+    }
+}
+
+function update() {
+
+    ctx.clearRect(0,0,width,height);
+    ctx.fillStyle="#000000";
+    ctx.fillRect(0,0,width,height);
+
+    let length=0;
+    for(let e of emitters) {
+        length+=e.particles.length;
+        e.update();
+    }
+    $("#particleNb").text(length);
 }
 
 function updateVelCanvas() {
+    let e=emitters[0];
+
     velCtx.clearRect(0,0,inputCanvasWidth,inputCanvasHeight);
 
     //spawnRadius
@@ -194,7 +224,7 @@ function updateVelCanvas() {
 }
 
 function reset() {
-    e.particles=[];
+    for(let e of emitters) e.particles=[];
     changeSpawnRadius(0);
     changeSpeedRandom(0);
     changeSpeed(100);
@@ -231,7 +261,7 @@ function random(min,max) {
 }
 
 function randomize() {
-    e.particles=[];
+    for(let e of emitters) e.particles=[];
 
     changeSpawnRadius(randomRange("#spawnRadius"));
     changeSpeedRandom(Math.round(random(0,1))?randomRange("#speedRandom"):parseFloat($("#speedRandom").attr('min')));
@@ -290,7 +320,7 @@ function randomize() {
         $("#opacityCheck").prop("checked",false);
     }
     changeOpacity();
-    
+
     //fill
     if(Math.round(random(0,1))) particleParam.fill=true;
     else particleParam.fill=false;

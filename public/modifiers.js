@@ -1,43 +1,43 @@
 function changeSpawnRadius(val) {
     $("#spawnRadius").val(val);
     $("#val_spawnRadius").text(val);
-    e.particleParam.spawnRadius={"minx":-width*val*0.01/2,"miny":-height*val*0.01/2,"maxx":width*val*0.01/2,"maxy":height*val*0.01/2};
+    for(let e of emitters) e.particleParam.spawnRadius={"minx":-width*val*0.01/2,"miny":-height*val*0.01/2,"maxx":width*val*0.01/2,"maxy":height*val*0.01/2};
 }
 
 function changeSpeedRandom(val) {
     $("#speedRandom").val(val);
     $("#val_speedRandom").text(val);
-    e.particleParam.speedRandom=val;
+    for(let e of emitters) e.particleParam.speedRandom=val;
 }
 
 function changeSpeed(val) {
     $("#speed").val(val);
     $("#val_speed").text(val);
-    e.particleParam.speed=val;
+    for(let e of emitters) e.particleParam.speed=val;
 }
 
 function changeSpawnParticleRate(val) {
     $("#emitUpRate").val(val);
     $("#val_emitUpRate").text(val);
-    e.spawnParticleRate=val;
+    for(let e of emitters) e.spawnParticleRate=val;
 }
 
 function changeParticlePerFrame(val) {
     $("#partAddRate").val(val);
     $("#val_partAddRate").text(val);
-    e.particlePerFrame=val;
+    for(let e of emitters) e.particlePerFrame=val;
 }
 
 function changeDirectionRandom(val) {
     $("#directionRandom").val(val);
     $("#val_directionRandom").text(val);
-    e.particleParam.directionRandom=val*Math.PI/180;
+    for(let e of emitters) e.particleParam.directionRandom=val*Math.PI/180;
 }
 
 function changeDirection(val) {
     $("#direction").val(val);
     $("#val_direction").text(val);
-    e.particleParam.direction=val*Math.PI/180;
+    for(let e of emitters) e.particleParam.direction=val*Math.PI/180;
 }
 
 function changeWidth(val) {
@@ -70,24 +70,29 @@ var brightnessCoef=10;
 
 function changeBrightness() {
     if($("#brightnessCheck").is(":checked")){
-        e.updateFunctions.brightness=function(dt){
-            this.brightness+=$("#brightnessSelect").val()*brightnessChange*dt/brightnessCoef;
-            if(this.brightness>100) this.brightness=100;
-        };
+        for(let e of emitters) {
+            e.updateFunctions.brightness=function(dt){
+                this.brightness+=$("#brightnessSelect").val()*brightnessChange*dt/brightnessCoef;
+                if(this.brightness>100) this.brightness=100;
+            };
+        }
         if($("#brightnessSelect").val()>0) {//increasing
-            e.endingConditions.brightness=function() {
-                return false;
-            }
             particleParam.brightness=0;
+            for(let e of emitters)
+                e.endingConditions.brightness=function() {
+                    return false;
+                }
         } else {//decreasing
-            e.endingConditions.brightness=function() {
-                return this.brightness<=0;
-            }
             particleParam.brightness=100;
+            for(let e of emitters)
+                e.endingConditions.brightness=function() {
+                    return this.brightness<=0;
+                }
         }
     } else {
         particleParam.brightness=50;
-        e.removeFunctionsFor("brightness");
+        for(let e of emitters)
+            e.removeFunctionsFor("brightness");
     }
 }
 
@@ -95,24 +100,28 @@ var opacityCoef=20;
 
 function changeOpacity() {
     if($("#opacityCheck").is(":checked")){
-        e.updateFunctions.opacity=function(dt){
-            this.opacity+=$("#opacitySelect").val()*opacityChange*dt/opacityCoef;
-            if(this.opacity>1) this.opacity=1;
-        };
+        for(let e of emitters)
+            e.updateFunctions.opacity=function(dt){
+                this.opacity+=$("#opacitySelect").val()*opacityChange*dt/opacityCoef;
+                if(this.opacity>1) this.opacity=1;
+            };
         if($("#opacitySelect").val()>0) {//increasing
-            e.endingConditions.opacity=function() {
-                return false;
-            }
             particleParam.opacity=0;
+            for(let e of emitters)
+                e.endingConditions.opacity=function() {
+                    return false;
+                }
         } else {//decreasing
-            e.endingConditions.opacity=function() {
-                return this.opacity<=0;
-            }
             particleParam.opacity=1;
+            for(let e of emitters)
+                e.endingConditions.opacity=function() {
+                    return this.opacity<=0;
+                }
         }
     } else {
         particleParam.opacity=1;
-        e.removeFunctionsFor("opacity");
+        for(let e of emitters)
+            e.removeFunctionsFor("opacity");
     }
 }
 
