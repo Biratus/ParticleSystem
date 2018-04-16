@@ -26,19 +26,7 @@ window.onload=function() {
     c.height=c.width;
     ctx=c.getContext("2d");
     $("#canvas").on("dblclick",function(event){
-        $("body>div").hide();
-        $("#fullscreen").show();
-        clear();
-        for(let e of emitters) {
-            let coefX=e.x/width;
-            let coefY=e.y/height;
-            e.x=window.innerWidth*coefX*fullscreenCoef;
-            e.y=window.innerHeight*coefY*fullscreenCoef;
-        }
-        width=window.innerWidth*fullscreenCoef;
-        height=window.innerHeight*fullscreenCoef;
-        let c=document.getElementById("fullscreen");
-        ctx=c.getContext("2d");
+        goFullScreen();
     });
     $("#fullscreen").on("dblclick",function(event){
         $("#fullscreen").hide();
@@ -114,6 +102,7 @@ window.onload=function() {
     //Opacity
     $("#opacityCheck").on("change",function(event){
         changeOpacity();
+        opacityChecked();
     });
     $("#opacitySelect").on("change",function(event){
         changeOpacity();
@@ -155,12 +144,6 @@ window.onload=function() {
         }
     });
 
-    $(function () {
-        $('[data-toggle="popover"]').popover({
-            container: 'body'
-        });
-    });
-
     $("#rangeColorPicker").css("background",colorPickerGradient("webkit"));
     $("#rangeColorPicker").on("change",function(event) {
         changeColor($(this).val());
@@ -168,6 +151,12 @@ window.onload=function() {
 
     for(let e of emitters) e.start();
     updateTimeout = setInterval(update,1000/FrameRate);
+
+    let lastTime=localStorage.getItem('lasttime');
+    //if(!lastTime || new Date().getTime()-lastTime>20*1000)//90*24*60*60*1000)
+    startTutorial();
+
+    localStorage.setItem("lasttime",new Date().getTime());
 }
 
 function stop() {
@@ -293,6 +282,7 @@ function random(min,max) {
 }
 
 function randomize() {
+    console.log('randomize');
     for(let e of emitters) e.particles=[];
 
     changeSpawnRadius(randomRange("#spawnRadius"));
@@ -368,4 +358,20 @@ function randomRange(id) {
     if(val<$(id).attr('min')) val=$(id).attr('min');
     else if(val>$(id).attr('max')) val=$(id).attr('max');
     return parseInt(val);
+}
+
+function goFullScreen() {
+    $("body>div").hide();
+    $("#fullscreen").show();
+    clear();
+    for(let e of emitters) {
+        let coefX=e.x/width;
+        let coefY=e.y/height;
+        e.x=window.innerWidth*coefX*fullscreenCoef;
+        e.y=window.innerHeight*coefY*fullscreenCoef;
+    }
+    width=window.innerWidth*fullscreenCoef;
+    height=window.innerHeight*fullscreenCoef;
+    let c=document.getElementById("fullscreen");
+    ctx=c.getContext("2d");
 }

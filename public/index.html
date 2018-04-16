@@ -12,6 +12,7 @@
         <script type="text/javascript" src="emitter.js"></script>
         <script type="text/javascript" src="particle.js"></script>
         <script type="text/javascript" src="modifiers.js"></script>
+        <script type="text/javascript" src="tutorial.js"></script>
 
         <link rel="stylesheet" href="bootstrap.min.css"/>
         <link rel="stylesheet" href="style.css"/>
@@ -37,9 +38,9 @@
                 <!--Alpha-->
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <span class="input-group-text">Opacity change over time?</span>
+                        <span class="input-group-text" >Opacity change over time?</span>
                         <div class="input-group-text">
-                            <input type="checkbox" id="opacityCheck">
+                            <input type="checkbox" id="opacityCheck" data-trigger="manual" data-toggle="tooltip" data-placement="top" title="Change opacity">
                         </div>
                     </div>
                     <select class="custom-select" id="opacitySelect">
@@ -82,7 +83,7 @@
                         <span class="input-group-text">Color:</span>
                         <div class="input-group-text" id="currColor"></div>
                     </div>
-                    <input type="range" class="slider form-control" id="rangeColorPicker" min="0" max="360" step="1"/>
+                    <input type="range" class="slider form-control" id="rangeColorPicker" min="0" max="360" step="1" data-trigger="manual" data-toggle="tooltip" data-placement="top" title="Change the color or the particles"/>
 
                 </div>
                 <div class="input-group mb-3">
@@ -115,7 +116,7 @@
                         <span class="input-group-text">Width Random:</span>
                         <div class="input-group-text" id="val_widthRandom">0</div>
                     </div>
-                    <input type="range" class="slider form-control" id="widthRandom" min="0" max="50" step="1" value="0"/>
+                    <input type="range" class="slider form-control" id="widthRandom" min="0" max="50" step="1" value="0" data-toggle="tooltip" data-placement="bottom" title="Add randomness to the width"/>
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
@@ -132,8 +133,8 @@
             <div>
                 <div class="btn-group" role="group">
                     <button class="btn btn-secondary" onclick="clear()">Clear particles</button>
-                    <button class="btn btn-secondary" onclick="reset()">Reset</button>
-                    <button class="btn btn-secondary" onclick="randomize()">Random configuration</button>
+                    <button class="btn btn-secondary" onclick="reset()">Reset parameters</button>
+                    <button class="btn btn-secondary" data-container="body" data-toggle="tooltip" data-placement="right" title="Chose random parameters and see what happens!" onclick="randomize()">Random parameters</button>
                 </div>
                 <h3>Emitter parameters</h3>
                 <div class="input-group mb-3">
@@ -148,28 +149,28 @@
                         <span class="input-group-text">Speed:</span>
                         <span class="input-group-text" id="val_speed">100</span>
                     </div>
-                    <input type="range" min="40" max="500" value="100" class="slider form-control" step="5" id="speed">
+                    <input type="range" min="40" max="500" value="100" class="slider form-control" step="5" id="speed" data-trigger="manual" data-toggle="tooltip" data-placement="top" title="Change the speed of the particles">
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Speed random:</span>
                         <span class="input-group-text" id="val_speedRandom">0</span>
                     </div>
-                    <input type="range" min="0" max="100" value="0" step="1" class="slider form-control" id="speedRandom">
+                    <input type="range" min="0" max="100" value="0" step="1" class="slider form-control" id="speedRandom" data-trigger="manual" data-toggle="tooltip" data-placement="top" title="Add randomness to the speed of the particles">
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Spawn particles every (ms):</span>
                         <span class="input-group-text" id="val_emitUpRate">200</span>
                     </div>
-                    <input type="range" min="0" max="500" value="200" class="slider form-control" id="emitUpRate" step="5">
+                    <input type="range" min="0" max="500" value="200" class="slider form-control" id="emitUpRate" step="5" data-trigger="manual" data-toggle="tooltip" data-placement="top" title="Change the frequency of the emitter">
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Number of particles per update:</span>
                         <span class="input-group-text" id="val_partAddRate">1</span>
                     </div>
-                    <input type="range" min="1" max="50" value="1" class="slider form-control" id="partAddRate" >
+                    <input type="range" min="1" max="50" value="1" class="slider form-control" id="partAddRate" data-trigger="manual" data-toggle="tooltip" data-placement="top" title="Increase the number of particles emmitted">
                 </div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
@@ -183,7 +184,7 @@
                         <span class="input-group-text">Direction random:</span>
                         <span class="input-group-text" id="val_directionRandom">0</span>
                     </div>
-                    <input type="range" min="0" max="180" value="0" class="slider form-control" step="1" id="directionRandom">
+                    <input type="range" min="0" max="180" value="0" class="slider form-control" step="1" id="directionRandom" data-trigger="manual" data-toggle="tooltip" data-placement="top" title="Add randomness to the direction">
                 </div>
             </div>
             <div id="propertyDisplay">
