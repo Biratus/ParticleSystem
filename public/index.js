@@ -29,20 +29,7 @@ window.onload=function() {
         goFullScreen();
     });
     $("#fullscreen").on("dblclick",function(event){
-        $("#fullscreen").hide();
-        $("body>div").show();
-        clear();
-        width=initW;
-        height=initH;
-        for(let e of emitters) {
-            let coefX=e.x/(window.innerWidth*fullscreenCoef);
-            let coefY=e.y/(window.innerHeight*fullscreenCoef);
-            e.x=width*coefX;
-            e.y=height*coefY;
-        }
-
-        let c=document.getElementById("canvas");
-        ctx=c.getContext("2d");
+       quitFullScreen();
     });
     let fScreen=document.getElementById("fullscreen");
     fScreen.width=window.innerWidth*fullscreenCoef;
@@ -102,7 +89,6 @@ window.onload=function() {
     //Opacity
     $("#opacityCheck").on("change",function(event){
         changeOpacity();
-        opacityChecked();
     });
     $("#opacitySelect").on("change",function(event){
         changeOpacity();
@@ -373,5 +359,22 @@ function goFullScreen() {
     width=window.innerWidth*fullscreenCoef;
     height=window.innerHeight*fullscreenCoef;
     let c=document.getElementById("fullscreen");
+    ctx=c.getContext("2d");
+}
+
+function quitFullScreen() {
+    $("#fullscreen").hide();
+    $("body>div").show();
+    clear();
+    width=initW;
+    height=initH;
+    for(let e of emitters) {
+        let coefX=e.x/$("#fullscreen").width();
+        let coefY=e.y/$("#fullscreen").height();
+        e.x=width*coefX;
+        e.y=height*coefY;
+    }
+
+    let c=document.getElementById("canvas");
     ctx=c.getContext("2d");
 }

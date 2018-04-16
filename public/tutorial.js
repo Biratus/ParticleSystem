@@ -48,14 +48,13 @@ var chronology=[
     }},
     {id:"#opacityCheck",event:"change",eventFunc:function(){
         changeOpacity();
-        opacityChecked();
         $("#opacityCheck").on("change",function(event){
             changeOpacity();
-            opacityChecked();
         });
 
         $(this).tooltip('hide');
         $(this).tooltip('dispose');
+        next();
     }},
     {id:"#widthRandom",event:"mousedown",eventFunc:function(){
         setSuggestion(20,this,"Up up up!");
@@ -69,13 +68,23 @@ var chronology=[
         goFullScreen();
         $(this).tooltip('hide');
         $(this).tooltip('dispose');
+        next();
         $("#canvas").on("dblclick",function(event){
             goFullScreen();
         });
+    }},
+    {id:"#fullscreen",event:"dblclick",eventFunc:function(){
+        quitFullScreen();
+        $(this).tooltip('hide');
+        $(this).tooltip('dispose');
+        $("#fullscreen").on("dblclick",function(event){
+           quitFullScreen();
+        });
+        setTimeout(next,1000);
     }}
 ];
 
-var currTutoIndex=5;
+var currTutoIndex=7;
 
 function startTutorial() {
 
@@ -83,22 +92,15 @@ function startTutorial() {
 
     for(let obj of chronology) {
         $(obj.id).on('show.bs.tooltip',function(){
-            console.log('show'+obj.id);
             $(obj.id).one(obj.event,function() {
                 obj.eventFunc.call(this);
 
+                $(obj.id).on('hide.bs.tooltip',function() {
+                    next();
+                });
 
-            });
-            $(obj.id).on('hide.bs.tooltip',function() {
-                console.log('hide'+chronology[currTutoIndex].id);
-                currTutoIndex++;
-                if(currTutoIndex<chronology.length) {
-                    $(chronology[currTutoIndex].id).tooltip('show');
-                } else chronoEnd();
             });
         });
-
-
     }
 
     $(chronology[currTutoIndex].id).tooltip("show");
@@ -106,24 +108,15 @@ function startTutorial() {
 
 }
 
-function opacityChecked() {
-    /*for(let i in chronology) {
-        console.log('i:'+chronology[i].id);
-        if(chronology[i].id=="#opacityCheck") {
-            if(currTutoIndex==i) {
-                $("#opacityCheck").tooltip('hide');
-                $("#opacityCheck").tooltip('dispose');
-                currTutoIndex++;
-                $(chronology[currTutoIndex].id).tooltip('show');
-            }
-            else return;
-
-        }
-    }*/
+function next() {
+    currTutoIndex++;
+    if(currTutoIndex<chronology.length) {
+        $(chronology[currTutoIndex].id).tooltip('show');
+    } else chronoEnd();
 }
 
 function chronoEnd() {
-
+    alert('Well done!\nYou completed the tutorial, you can now play around with different parameters or you can hit "Random parameters" and see what happens!');
 }
 
 function setSuggestion(val,elt,text) {

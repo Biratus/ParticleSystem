@@ -32,7 +32,7 @@
             firebase.initializeApp(config);
         </script>
         <div id="header">
-            <canvas id="canvas"></canvas>
+            <canvas id="canvas" data-trigger="manual" data-toggle="tooltip" data-placement="right" title="double click=Go Fullscreen"></canvas>
             <div class="container particleParam">
                 <h3>Particle parameters</h3>
                 <!--Alpha-->
@@ -193,6 +193,6 @@
                 <p>Number of particles on the canvas: <strong id="particleNb"></strong></p>
             </div>
         </div>
-<canvas id="fullscreen"></canvas>
+<canvas id="fullscreen"  data-trigger="manual" data-toggle="tooltip" data-placement="right" title="Go Back"></canvas>
     </body>
 </html>
